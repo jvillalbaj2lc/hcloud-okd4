@@ -70,3 +70,13 @@ variable "image" {
   description = "Image selector (either fcos or rhcos)"
   default     = "fcos"
 }
+
+variable "arch" {
+  type        = string
+  description = "Image architecture"
+}
+
+variable "server_type" {
+  type        = string
+  description = "Server type"
+}

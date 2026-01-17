@@ -10,6 +10,21 @@ OKD_MIRROR?=https://github.com/okd-project/okd/releases/download
 # either okd or ocp
 DEPLOYMENT_TYPE?=okd
 
+# architecture
+ARCH?=amd64
+
+ifeq ($(ARCH),arm64)
+	ARCH_SUFFIX=-$(ARCH)
+	JQ_ARCH=aarch64
+	RESCUE_MODE=linuxarm
+	SERVER_TYPE=cax31
+else
+	ARCH_SUFFIX=
+	JQ_ARCH=x86_64
+	RESCUE_MODE=linux64
+	SERVER_TYPE=cpx41
+endif
+
 # fixed release version
 OPENSHIFT_RELEASE?=none
 
@@ -48,13 +63,13 @@ fetch: fetch_$(DEPLOYMENT_TYPE)
 
 .PHONY: fetch_okd
 fetch_okd:
-	wget -O openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz
-	wget -O openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-install-linux$(ARCH_SUFFIX)-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-client-linux$(ARCH_SUFFIX)-$(OPENSHIFT_RELEASE).tar.gz
 
 .PHONY: fetch_ocp
 fetch_ocp:
 	wget -O openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz
-	wget -O openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-client-linux$(ARCH_SUFFIX)-$(OPENSHIFT_RELEASE).tar.gz
 
 .PHONY: build
 build:
@@ -86,8 +101,8 @@ generate_ignition:
 .PHONY: hcloud_image
 hcloud_image:
 	@if [ -z "$(HCLOUD_TOKEN)" ]; then echo "ERROR: HCLOUD_TOKEN is not set"; exit 1; fi
-	if [ "$(DEPLOYMENT_TYPE)" == "okd" ]; then (cd packer && packer build -var fcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-fcos.json); fi
-	if [ "$(DEPLOYMENT_TYPE)" == "ocp" ]; then (cd packer && packer build -var rhcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-rhcos.json); fi
+	if [ "$(DEPLOYMENT_TYPE)" == "okd" ]; then (cd packer && packer build -var rescue_mode=$(RESCUE_MODE) -var arch=$(JQ_ARCH) -var fcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(JQ_ARCH).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-fcos.json); fi
+	if [ "$(DEPLOYMENT_TYPE)" == "ocp" ]; then (cd packer && packer build -var rescue_mode=$(RESCUE_MODE) -var arch=$(JQ_ARCH) -var rhcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(JQ_ARCH).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-rhcos.json); fi
 
 .PHONY: sign_csr
 sign_csr:
@@ -108,7 +123,7 @@ infrastructure:
 	@if [ -z "$(TF_VAR_dns_zone_id)" ]; then echo "ERROR: TF_VAR_dns_zone_id is not set"; exit 1; fi
 	@if [ -z "$(HCLOUD_TOKEN)" ]; then echo "ERROR: HCLOUD_TOKEN is not set"; exit 1; fi
 	@if [ -z "$(CLOUDFLARE_EMAIL)" ]; then echo "ERROR: CLOUDFLARE_EMAIL is not set"; exit 1; fi
-	(cd terraform && terraform init && terraform $(MODE) -var image=$(COREOS_IMAGE) -var bootstrap=$(BOOTSTRAP))
+	(cd terraform && terraform init && terraform $(MODE) -var server_type=$(SERVER_TYPE) -var arch=$(JQ_ARCH) -var image=$(COREOS_IMAGE) -var bootstrap=$(BOOTSTRAP))
 	if [ "$(MODE)" == "apply" ]; then (cd ansible && ansible-playbook site.yml); fi
 
 .PHONY: destroy
