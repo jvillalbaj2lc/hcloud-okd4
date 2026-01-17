@@ -20,6 +20,9 @@ CONTAINER_TAG?=$(OPENSHIFT_RELEASE)
 # architecture (amd64 or arm64)
 ARCH?=amd64
 
+# Hetzner Cloud location (e.g., nbg1, fsn1, hel1)
+HCLOUD_LOCATION?=nbg1
+
 # coreos
 ifeq ($(DEPLOYMENT_TYPE),ocp)
 	COREOS_IMAGE=rhcos
@@ -89,8 +92,8 @@ generate_ignition:
 .PHONY: hcloud_image
 hcloud_image:
 	@if [ -z "$(HCLOUD_TOKEN)" ]; then echo "ERROR: HCLOUD_TOKEN is not set"; exit 1; fi
-	if [ "$(DEPLOYMENT_TYPE)" == "okd" ]; then (cd packer && packer build -var fcos_arch=$(ARCH) -var fcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(if $(filter $(ARCH),arm64),aarch64,x86_64).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-fcos.json); fi
-	if [ "$(DEPLOYMENT_TYPE)" == "ocp" ]; then (cd packer && packer build -var rhcos_arch=$(ARCH) -var rhcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(if $(filter $(ARCH),arm64),aarch64,x86_64).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-rhcos.json); fi
+	if [ "$(DEPLOYMENT_TYPE)" == "okd" ]; then (cd packer && packer build -var location=$(HCLOUD_LOCATION) -var fcos_arch=$(ARCH) -var fcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(if $(filter $(ARCH),arm64),aarch64,x86_64).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-fcos.json); fi
+	if [ "$(DEPLOYMENT_TYPE)" == "ocp" ]; then (cd packer && packer build -var location=$(HCLOUD_LOCATION) -var rhcos_arch=$(ARCH) -var rhcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(if $(filter $(ARCH),arm64),aarch64,x86_64).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-rhcos.json); fi
 
 .PHONY: sign_csr
 sign_csr:
