@@ -71,6 +71,12 @@ variable "image" {
   default     = "fcos"
 }
 
+variable "arch" {
+  type        = string
+  description = "CPU architecture for image selection (amd64 or arm64)"
+  default     = "amd64"
+}
+
 variable "server_type_ignition" {
   type        = string
   description = "Hetzner server type for the ignition host"
