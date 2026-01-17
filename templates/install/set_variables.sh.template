@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Terraform / DNS
+export TF_VAR_dns_domain=okd4.example.com
+export TF_VAR_dns_zone_id=YOUR_ZONE_ID
+
+# Hetzner Cloud credentials
+export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
+
+# Cloudflare credentials
+export CLOUDFLARE_EMAIL=user@example.com
+export CLOUDFLARE_API_KEY=YOUR_API_KEY
+
+# OKD/OCP settings
+export DEPLOYMENT_TYPE=okd
+export OPENSHIFT_RELEASE=4.20.0-okd-scos.9
+export ARCH=arm64
+export TF_VAR_replicas_master=3
+export TF_VAR_replicas_worker=2
+export TF_VAR_server_type_bootstrap=cax31
+export TF_VAR_server_type_master=cax31
+export TF_VAR_server_type_worker=cax31
+export TF_VAR_server_type_ignition=cax31
