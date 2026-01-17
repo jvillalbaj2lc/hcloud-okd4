@@ -2,6 +2,7 @@
 *.swp
 env.sh
 install-config.yaml
+set_variables.sh
 inventory.ini
 config
 ignition
