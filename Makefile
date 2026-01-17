@@ -17,6 +17,9 @@ OPENSHIFT_RELEASE?=none
 CONTAINER_NAME?=quay.io/slauger/hcloud-okd4
 CONTAINER_TAG?=$(OPENSHIFT_RELEASE)
 
+# architecture (amd64 or arm64)
+ARCH?=amd64
+
 # coreos
 ifeq ($(DEPLOYMENT_TYPE),ocp)
 	COREOS_IMAGE=rhcos
@@ -48,17 +51,17 @@ fetch: fetch_$(DEPLOYMENT_TYPE)
 
 .PHONY: fetch_okd
 fetch_okd:
-	wget -O openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz
-	wget -O openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz
 
 .PHONY: fetch_ocp
 fetch_ocp:
-	wget -O openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(OPENSHIFT_RELEASE).tar.gz
-	wget -O openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OPENSHIFT_MIRROR)/clients/ocp/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz
 
 .PHONY: build
 build:
-	docker build --build-arg DEPLOYMENT_TYPE=$(DEPLOYMENT_TYPE) --build-arg OPENSHIFT_RELEASE=$(OPENSHIFT_RELEASE) -t $(CONTAINER_NAME):$(CONTAINER_TAG) .
+	docker build --build-arg DEPLOYMENT_TYPE=$(DEPLOYMENT_TYPE) --build-arg OPENSHIFT_RELEASE=$(OPENSHIFT_RELEASE) --build-arg ARCH=$(ARCH) -t $(CONTAINER_NAME):$(CONTAINER_TAG) .
 
 .PHONY: test
 test:
@@ -86,8 +89,8 @@ generate_ignition:
 .PHONY: hcloud_image
 hcloud_image:
 	@if [ -z "$(HCLOUD_TOKEN)" ]; then echo "ERROR: HCLOUD_TOKEN is not set"; exit 1; fi
-	if [ "$(DEPLOYMENT_TYPE)" == "okd" ]; then (cd packer && packer build -var fcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-fcos.json); fi
-	if [ "$(DEPLOYMENT_TYPE)" == "ocp" ]; then (cd packer && packer build -var rhcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.x86_64.artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-rhcos.json); fi
+	if [ "$(DEPLOYMENT_TYPE)" == "okd" ]; then (cd packer && packer build -var fcos_arch=$(ARCH) -var fcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(if $(filter $(ARCH),arm64),aarch64,x86_64).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-fcos.json); fi
+	if [ "$(DEPLOYMENT_TYPE)" == "ocp" ]; then (cd packer && packer build -var rhcos_arch=$(ARCH) -var rhcos_url=$(shell openshift-install coreos print-stream-json | jq -r '.architectures.$(if $(filter $(ARCH),arm64),aarch64,x86_64).artifacts.qemu.formats."qcow2.gz".disk.location') hcloud-rhcos.json); fi
 
 .PHONY: sign_csr
 sign_csr:

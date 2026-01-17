@@ -4,6 +4,7 @@
     "server_type": "cpx31",
     "snapshot_prefix": "fcos",
     "image_type": "generic",
+    "fcos_arch": "amd64",
     "ignition_config": "config-3.0.0.ign"
   },
   "builders": [
@@ -18,6 +19,7 @@
       "snapshot_labels": {
         "os": "fcos",
         "image_type": "{{user `image_type`}}",
+        "arch": "{{user `fcos_arch`}}",
         "fcos_stream": "{{user `fcos_stream`}}",
         "fcos_release": "{{user `fcos_release`}}"
       }
@@ -31,8 +33,8 @@
         "mkdir /source",
         "mount -t tmpfs -o size=4G none /source",
         "cd /source",
-        "curl -sfL {{user `fcos_url`}} | gzip -d > fcos-x86_64-qemu.x86_64.qcow2",
-        "qemu-img convert fcos-x86_64-qemu.x86_64.qcow2 -O raw /dev/sda",
+        "curl -sfL {{user `fcos_url`}} | gzip -d > fcos.qcow2",
+        "qemu-img convert fcos.qcow2 -O raw /dev/sda",
         "partprobe /dev/sda",
         "mkdir /target",
         "mount /dev/sda3 /target",
