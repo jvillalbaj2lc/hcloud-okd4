@@ -5,6 +5,7 @@
     "snapshot_prefix": "rhcos",
     "image_type": "generic",
     "rhcos_arch": "amd64",
+    "rescue_os": "linux64",
     "ignition_config": "config-2.2.0.ign"
   },
   "builders": [
@@ -14,7 +15,7 @@
       "location": "{{user `location`}}",
       "server_type": "{{user `server_type`}}",
       "ssh_username": "root",
-      "rescue": "linux64",
+      "rescue": "{{user `rescue_os`}}",
       "snapshot_name": "{{user `snapshot_prefix`}}-{{timestamp}}",
       "snapshot_labels": {
         "os": "rhcos",
