@@ -71,6 +71,8 @@ For OCP (Red Hat OpenShift), you will also need a valid pull secret, available f
 
 1. Build and start the toolbox
    ```bash
+   # Optional: override container engine (docker or podman)
+   # export CONTAINER_CMD=podman
    make fetch
    make build
    make run

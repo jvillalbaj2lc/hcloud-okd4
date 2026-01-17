@@ -17,6 +17,9 @@ OPENSHIFT_RELEASE?=none
 CONTAINER_NAME?=quay.io/slauger/hcloud-okd4
 CONTAINER_TAG?=$(OPENSHIFT_RELEASE)
 
+# container engine
+CONTAINER_CMD?=$(shell command -v docker 2>/dev/null || command -v podman 2>/dev/null)
+
 # architecture (amd64 or arm64)
 ARCH?=amd64
 
@@ -61,19 +64,23 @@ fetch_ocp:
 
 .PHONY: build
 build:
-	docker build --build-arg DEPLOYMENT_TYPE=$(DEPLOYMENT_TYPE) --build-arg OPENSHIFT_RELEASE=$(OPENSHIFT_RELEASE) --build-arg ARCH=$(ARCH) -t $(CONTAINER_NAME):$(CONTAINER_TAG) .
+	@if [ -z "$(CONTAINER_CMD)" ]; then echo "ERROR: container engine not found (install docker or podman)"; exit 1; fi
+	$(CONTAINER_CMD) build --build-arg DEPLOYMENT_TYPE=$(DEPLOYMENT_TYPE) --build-arg OPENSHIFT_RELEASE=$(OPENSHIFT_RELEASE) --build-arg ARCH=$(ARCH) -t $(CONTAINER_NAME):$(CONTAINER_TAG) .
 
 .PHONY: test
 test:
-	docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(shell pwd):/src:ro gcr.io/gcp-runtimes/container-structure-test:latest test --image $(CONTAINER_NAME):$(CONTAINER_TAG) --config /src/tests/image.tests.yaml
+	@if [ -z "$(CONTAINER_CMD)" ]; then echo "ERROR: container engine not found (install docker or podman)"; exit 1; fi
+	$(CONTAINER_CMD) run -v /var/run/docker.sock:/var/run/docker.sock -v $(shell pwd):/src:ro gcr.io/gcp-runtimes/container-structure-test:latest test --image $(CONTAINER_NAME):$(CONTAINER_TAG) --config /src/tests/image.tests.yaml
 
 .PHONY: push
 push:
-	docker push $(CONTAINER_NAME):$(CONTAINER_TAG)
+	@if [ -z "$(CONTAINER_CMD)" ]; then echo "ERROR: container engine not found (install docker or podman)"; exit 1; fi
+	$(CONTAINER_CMD) push $(CONTAINER_NAME):$(CONTAINER_TAG)
 
 .PHONY: run
 run:
-	docker run -it --hostname openshift-toolbox --mount type=bind,source="$(shell pwd)",target=/workspace --mount type=bind,source="$(HOME)/.ssh,target=/root/.ssh" $(CONTAINER_NAME):$(CONTAINER_TAG) /bin/bash
+	@if [ -z "$(CONTAINER_CMD)" ]; then echo "ERROR: container engine not found (install docker or podman)"; exit 1; fi
+	$(CONTAINER_CMD) run -it --hostname openshift-toolbox --mount type=bind,source="$(shell pwd)",target=/workspace --mount type=bind,source="$(HOME)/.ssh,target=/root/.ssh" $(CONTAINER_NAME):$(CONTAINER_TAG) /bin/bash
 
 .PHONY: generate_manifests
 generate_manifests:
