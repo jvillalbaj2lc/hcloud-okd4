@@ -63,6 +63,8 @@ export TF_VAR_server_type_worker=cax31
 export TF_VAR_server_type_ignition=cax31
 ```
 
+Terraform will use `ARCH` to select the matching CoreOS image label when applying infrastructure.
+
 For OCP (Red Hat OpenShift), you will also need a valid pull secret, available from cloud.redhat.com.
 
 ---
