@@ -32,6 +32,8 @@ endif
 
 # Hetzner Cloud location (e.g., nbg1, fsn1, hel1)
 HCLOUD_LOCATION?=hel1
+TF_VAR_location?=$(HCLOUD_LOCATION)
+export TF_VAR_location
 
 # coreos
 ifeq ($(DEPLOYMENT_TYPE),ocp)
