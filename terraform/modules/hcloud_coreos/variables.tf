@@ -8,15 +8,6 @@ variable "dns_domain" {
   description = "DNS domain"
 }
 
-variable "dns_zone_id" {
-  description = "Zone ID"
-  default     = null
-}
-
-variable "dns_internal_ip" {
-  description = "Point DNS record to internal ip"
-  default     = false
-}
 
 variable "instance_count" {
   type        = number

@@ -4,7 +4,6 @@ module "ignition" {
   location       = var.location
   name           = "ignition"
   dns_domain     = var.dns_domain
-  dns_zone_id    = var.dns_zone_id
   image          = "ubuntu-22.04"
   user_data      = file("templates/cloud-init.tpl")
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
@@ -18,8 +17,6 @@ module "bootstrap" {
   location        = var.location
   name            = "bootstrap"
   dns_domain      = var.dns_domain
-  dns_zone_id     = var.dns_zone_id
-  dns_internal_ip = false
   image           = data.hcloud_image.image.id
   image_name      = var.image
   server_type     = var.server_type_bootstrap
@@ -33,8 +30,6 @@ module "master" {
   location        = var.location
   name            = "master"
   dns_domain      = var.dns_domain
-  dns_zone_id     = var.dns_zone_id
-  dns_internal_ip = false
   image           = data.hcloud_image.image.id
   image_name      = var.image
   server_type     = var.server_type_master
@@ -54,8 +49,6 @@ module "worker" {
   location        = var.location
   name            = "worker"
   dns_domain      = var.dns_domain
-  dns_zone_id     = var.dns_zone_id
-  dns_internal_ip = false
   image           = data.hcloud_image.image.id
   image_name      = var.image
   server_type     = var.server_type_worker

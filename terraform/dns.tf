@@ -18,7 +18,7 @@ resource "cloudflare_dns_record" "dns_a_api" {
 resource "cloudflare_dns_record" "dns_a_api_int" {
   zone_id = var.dns_zone_id
   name    = "api-int.${var.dns_domain}"
-  content = hcloud_load_balancer.lb.ipv4
+  content = hcloud_load_balancer.lb.network_ip
   type    = "A"
   ttl     = 120
 }
@@ -42,11 +42,11 @@ resource "cloudflare_dns_record" "dns_a_apps_wc" {
 resource "cloudflare_dns_record" "dns_a_etcd" {
   zone_id = var.dns_zone_id
   name    = "etcd-${count.index}.${var.dns_domain}"
-  content = module.master.ipv4_addresses[count.index]
+  content = module.master.private_ipv4_addresses[count.index]
   type    = "A"
   ttl     = 120
 
-  count = length(module.master.ipv4_addresses)
+  count = length(module.master.private_ipv4_addresses)
 }
 
 resource "cloudflare_dns_record" "dns_srv_etcd" {
