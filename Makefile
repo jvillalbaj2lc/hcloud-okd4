@@ -25,7 +25,7 @@ ifeq ($(ARCH),arm64)
 	HCLOUD_SERVER_TYPE?=cax31
     FILE_DOWN_ARCH?=arm64-
 else
-	HCLOUD_SERVER_TYPE?=cpx31
+	HCLOUD_SERVER_TYPE?=cpx32
 endif
 
 
