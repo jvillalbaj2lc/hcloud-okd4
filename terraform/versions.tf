@@ -6,7 +6,7 @@ terraform {
     }
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "1.52.0"
+      version = ">= 1.52.0" # Upgrade to latest
     }
     local = {
       source  = "hashicorp/local"
@@ -15,9 +15,6 @@ terraform {
     random = {
       source  = "hashicorp/random"
       version = "3.7.2"
-    }
-    hetznerdns = {
-      source  = "timohirt/hetznerdns"
     }
   }
   required_version = ">= 0.14"

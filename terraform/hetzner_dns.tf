@@ -1,48 +1,43 @@
 
-resource "hetznerdns_zone" "private_zone" {
+resource "hcloud_zone" "private_zone" {
   name = var.dns_domain
-  ttl  = 3600
+  ttl  = 120
+  mode = "primary"
 }
 
-resource "hetznerdns_record" "master" {
-  count   = var.replicas_master
-  zone_id = hetznerdns_zone.private_zone.id
-  name    = "master-${count.index}"
+resource "hcloud_zone_rrset" "api" {
+  zone    = hcloud_zone.private_zone.name
   type    = "A"
-  value   = module.master.internal_ipv4_addresses[count.index]
-  ttl     = 120
-}
-
-resource "hetznerdns_record" "etcd" {
-  count   = var.replicas_master
-  zone_id = hetznerdns_zone.private_zone.id
-  name    = "etcd-${count.index}"
-  type    = "A"
-  value   = module.master.internal_ipv4_addresses[count.index]
-  ttl     = 120
-}
-
-resource "hetznerdns_record" "etcd_srv" {
-  count   = var.replicas_master
-  zone_id = hetznerdns_zone.private_zone.id
-  name    = "_etcd-server-ssl._tcp"
-  type    = "SRV"
-  value   = "0 0 2380 etcd-${count.index}.${var.dns_domain}"
-  ttl     = 120
-}
-
-resource "hetznerdns_record" "api" {
-  zone_id = hetznerdns_zone.private_zone.id
   name    = "api"
-  type    = "A"
-  value   = hcloud_load_balancer_network.lb_network.ip
+  records = [{ value = hcloud_load_balancer_network.lb_network.ip }]
   ttl     = 120
 }
 
-resource "hetznerdns_record" "api_int" {
-  zone_id = hetznerdns_zone.private_zone.id
-  name    = "api-int"
+resource "hcloud_zone_rrset" "api_int" {
+  zone    = hcloud_zone.private_zone.name
   type    = "A"
-  value   = hcloud_load_balancer_network.lb_network.ip
+  name    = "api-int"
+  records = [{ value = hcloud_load_balancer_network.lb_network.ip }]
   ttl     = 120
+}
+
+resource "hcloud_zone_rrset" "etcd" {
+  for_each = {
+    for i, ip in module.master.internal_ipv4_addresses : i => ip
+  }
+  zone    = hcloud_zone.private_zone.name
+  type    = "A"
+  name    = "etcd-${each.key}"
+  records = [{ value = each.value }]
+  ttl     = 120
+}
+
+resource "hcloud_zone_rrset" "etcd_srv" {
+  zone    = hcloud_zone.private_zone.name
+  type    = "SRV"
+  name    = "_etcd-server-ssl._tcp"
+  records = [
+    for i in range(var.replicas_master) : { value = "0 0 2380 etcd-${i}.${var.dns_domain}" }
+  ]
+  ttl = 120
 }
