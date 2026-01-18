@@ -70,3 +70,33 @@ variable "image" {
   description = "Image selector (either fcos or rhcos)"
   default     = "fcos"
 }
+
+variable "arch" {
+  type        = string
+  description = "CPU architecture for image selection (amd64 or arm64)"
+  default     = "amd64"
+}
+
+variable "server_type_ignition" {
+  type        = string
+  description = "Hetzner server type for the ignition host"
+  default     = "cpx21"
+}
+
+variable "server_type_bootstrap" {
+  type        = string
+  description = "Hetzner server type for the bootstrap host"
+  default     = "cpx41"
+}
+
+variable "server_type_master" {
+  type        = string
+  description = "Hetzner server type for master nodes"
+  default     = "cpx41"
+}
+
+variable "server_type_worker" {
+  type        = string
+  description = "Hetzner server type for worker nodes"
+  default     = "cpx41"
+}

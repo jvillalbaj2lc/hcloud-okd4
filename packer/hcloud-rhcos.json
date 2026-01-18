@@ -1,9 +1,11 @@
 {
   "variables": {
-    "location": "nbg1",
-    "server_type": "cpx31",
+    "location": "{{if env `HCLOUD_LOCATION`}}{{env `HCLOUD_LOCATION`}}{{else}}nbg1{{end}}",
+    "server_type": "{{if env `HCLOUD_SERVER_TYPE`}}{{env `HCLOUD_SERVER_TYPE`}}{{else}}cpx31{{end}}",
     "snapshot_prefix": "rhcos",
     "image_type": "generic",
+    "rhcos_arch": "amd64",
+    "rescue_os": "linux64",
     "ignition_config": "config-2.2.0.ign"
   },
   "builders": [
@@ -13,11 +15,12 @@
       "location": "{{user `location`}}",
       "server_type": "{{user `server_type`}}",
       "ssh_username": "root",
-      "rescue": "linux64",
+      "rescue": "{{user `rescue_os`}}",
       "snapshot_name": "{{user `snapshot_prefix`}}-{{timestamp}}",
       "snapshot_labels": {
         "os": "rhcos",
         "image_type": "{{user `image_type`}}",
+        "arch": "{{user `rhcos_arch`}}",
         "fcos_stream": "{{user `fcos_stream`}}",
         "rhcos_release": "{{user `rhcos_release`}}",
         "rhcos_release_minor": "{{user `rhcos_release_minor`}}"
@@ -32,8 +35,8 @@
         "mkdir /source",
         "mount -t tmpfs -o size=4G none /source",
         "cd /source",
-        "curl -sfL {{user `rhcos_url`}} | gzip -d rhcos-x86_64-qemu.x86_64.qcow2",
-        "qemu-img convert rhcos-x86_64-qemu.x86_64.qcow2 -O raw /dev/sda",
+        "curl -sfL {{user `rhcos_url`}} | gzip -d > rhcos.qcow2",
+        "qemu-img convert rhcos.qcow2 -O raw /dev/sda",
         "partprobe /dev/sda",
         "mkdir /target",
         "mount /dev/sda2 /target",

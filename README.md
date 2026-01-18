@@ -33,6 +33,13 @@ Additional worker nodes can be added by setting an environment variable **before
 export TF_VAR_replicas_worker=3  # Example: 3 worker nodes
 ```
 
+To deploy a multi-node control plane (e.g., 3 masters + 2 workers), set both replica counts:
+
+```bash
+export TF_VAR_replicas_master=3
+export TF_VAR_replicas_worker=2
+```
+
 ---
 
 ## Version & Deployment Options
@@ -45,6 +52,18 @@ Example:
 export DEPLOYMENT_TYPE=okd # Options: "okd" or "ocp", default is "okd"
 export OPENSHIFT_RELEASE=$(make latest_version) # or a fixed version like "4.19.9"
 ```
+
+For ARM-based installs (Hetzner **cax** instances), set the architecture and server types:
+
+```bash
+export ARCH=arm64
+export TF_VAR_server_type_bootstrap=cax31
+export TF_VAR_server_type_master=cax31
+export TF_VAR_server_type_worker=cax31
+export TF_VAR_server_type_ignition=cax31
+```
+
+Terraform will use `ARCH` to select the matching CoreOS image label when applying infrastructure.
 
 For OCP (Red Hat OpenShift), you will also need a valid pull secret, available from cloud.redhat.com.
 
@@ -126,6 +145,16 @@ pullSecret: '{"auths":{"none":{"auth":"none"}}}'
 sshKey: ssh-rsa AAAA…<your ssh key here>
 ```
 
+For a 3x control-plane / 2x worker cluster, update the install-config to match:
+
+```yaml
+controlPlane:
+  replicas: 3
+compute:
+  - name: worker
+    replicas: 2
+```
+
 ### Required Environment Variables
 
 ```bash
@@ -135,10 +164,28 @@ export TF_VAR_dns_zone_id=YOUR_ZONE_ID
 
 # Hetzner Cloud credentials
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
+# Optional: set the Hetzner location for Packer builds (e.g., nbg1, fsn1, hel1)
+export HCLOUD_LOCATION=nbg1
+# Optional: set the Hetzner server type for Packer builds (e.g., cx43, cpx31, cax31)
+export HCLOUD_SERVER_TYPE=cx43
 
 # Cloudflare credentials
 export CLOUDFLARE_EMAIL=user@example.com
 export CLOUDFLARE_API_KEY=YOUR_API_KEY
+```
+
+### ARM + OKD 4.20 Example
+
+```bash
+export DEPLOYMENT_TYPE=okd
+export OPENSHIFT_RELEASE=4.20.0-okd-scos.9
+export ARCH=arm64
+export TF_VAR_replicas_master=3
+export TF_VAR_replicas_worker=2
+export TF_VAR_server_type_bootstrap=cax31
+export TF_VAR_server_type_master=cax31
+export TF_VAR_server_type_worker=cax31
+export TF_VAR_server_type_ignition=cax31
 ```
 
 ---

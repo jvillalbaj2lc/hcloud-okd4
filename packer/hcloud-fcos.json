@@ -1,9 +1,11 @@
 {
   "variables": {
-    "location": "hel1",
-    "server_type": "cx43",
+    "location": "{{if env `HCLOUD_LOCATION`}}{{env `HCLOUD_LOCATION`}}{{else}}nbg1{{end}}",
+    "server_type": "{{if env `HCLOUD_SERVER_TYPE`}}{{env `HCLOUD_SERVER_TYPE`}}{{else}}cpx42{{end}}",
     "snapshot_prefix": "fcos",
     "image_type": "generic",
+    "fcos_arch": "amd64",
+    "rescue_os": "linux64",
     "ignition_config": "config-3.0.0.ign"
   },
   "builders": [
@@ -13,11 +15,12 @@
       "location": "{{user `location`}}",
       "server_type": "{{user `server_type`}}",
       "ssh_username": "root",
-      "rescue": "linux64",
+      "rescue": "{{user `rescue_os`}}",
       "snapshot_name": "{{user `snapshot_prefix`}}-{{timestamp}}",
       "snapshot_labels": {
         "os": "fcos",
         "image_type": "{{user `image_type`}}",
+        "arch": "{{user `fcos_arch`}}",
         "fcos_stream": "{{user `fcos_stream`}}",
         "fcos_release": "{{user `fcos_release`}}"
       }
@@ -31,8 +34,8 @@
         "mkdir /source",
         "mount -t tmpfs -o size=4G none /source",
         "cd /source",
-        "curl -sfL {{user `fcos_url`}} | gzip -d > fcos-x86_64-qemu.x86_64.qcow2",
-        "qemu-img convert fcos-x86_64-qemu.x86_64.qcow2 -O raw /dev/sda",
+        "curl -sfL {{user `fcos_url`}} | gzip -d > fcos.qcow2",
+        "qemu-img convert fcos.qcow2 -O raw /dev/sda",
         "partprobe /dev/sda",
         "mkdir /target",
         "mount /dev/sda3 /target",
