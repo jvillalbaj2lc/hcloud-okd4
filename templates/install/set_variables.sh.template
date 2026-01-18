@@ -6,6 +6,8 @@ export TF_VAR_dns_zone_id=YOUR_ZONE_ID
 
 # Hetzner Cloud credentials
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
+export HCLOUD_LOCATION=hel1
+export HCLOUD_SERVER_TYPE=cx43
 
 # Cloudflare credentials
 export CLOUDFLARE_EMAIL=user@example.com

@@ -166,6 +166,8 @@ export TF_VAR_dns_zone_id=YOUR_ZONE_ID
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
 # Optional: set the Hetzner location for Packer builds (e.g., nbg1, fsn1, hel1)
 export HCLOUD_LOCATION=nbg1
+# Optional: set the Hetzner server type for Packer builds (e.g., cx43, cpx31, cax31)
+export HCLOUD_SERVER_TYPE=cx43
 
 # Cloudflare credentials
 export CLOUDFLARE_EMAIL=user@example.com

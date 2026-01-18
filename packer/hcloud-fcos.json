@@ -1,7 +1,7 @@
 {
   "variables": {
-    "location": "nbg1",
-    "server_type": "cpx42",
+    "location": "{{if env `HCLOUD_LOCATION`}}{{env `HCLOUD_LOCATION`}}{{else}}nbg1{{end}}",
+    "server_type": "{{if env `HCLOUD_SERVER_TYPE`}}{{env `HCLOUD_SERVER_TYPE`}}{{else}}cpx42{{end}}",
     "snapshot_prefix": "fcos",
     "image_type": "generic",
     "fcos_arch": "amd64",
