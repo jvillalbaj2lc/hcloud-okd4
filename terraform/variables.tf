@@ -26,6 +26,12 @@ variable "dns_zone_id" {
   description = "Zone ID of the Cloudflare domain"
 }
 
+variable "hetzner_dns_token" {
+  type        = string
+  description = "Hetzner DNS API token"
+  sensitive   = true
+}
+
 variable "ip_loadbalancer_api" {
   description = "IP of an external loadbalancer for api (optional)"
   default     = null

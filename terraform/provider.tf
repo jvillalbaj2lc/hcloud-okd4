@@ -9,3 +9,6 @@ provider "local" {
 
 provider "random" {
 }
+
+provider "hetznerdns" {
+}

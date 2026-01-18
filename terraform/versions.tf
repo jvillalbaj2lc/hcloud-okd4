@@ -16,6 +16,9 @@ terraform {
       source  = "hashicorp/random"
       version = "3.7.2"
     }
+    hetznerdns = {
+      source  = "timohirt/hetznerdns"
+    }
   }
   required_version = ">= 0.14"
 }
