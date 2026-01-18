@@ -1,10 +1,25 @@
 locals {
   # Une todos los servers que deben ser targets del LB (masters + workers + bootstrap)
-  lb_target_server_ids = toset(concat(
-    module.master.server_ids,
-    module.worker.server_ids,
-    module.bootstrap.server_ids
-  ))
+  # Usa claves estáticas para evitar for_each con valores desconocidos en plan
+  lb_target_servers_master = {
+    for idx in range(var.replicas_master) :
+    "master-${idx}" => module.master.server_ids[idx]
+  }
+
+  lb_target_servers_worker = {
+    for idx in range(var.replicas_worker) :
+    "worker-${idx}" => module.worker.server_ids[idx]
+  }
+
+  lb_target_servers_bootstrap = var.bootstrap ? {
+    "bootstrap-0" = module.bootstrap.server_ids[0]
+  } : {}
+
+  lb_target_server_ids = merge(
+    local.lb_target_servers_master,
+    local.lb_target_servers_worker,
+    local.lb_target_servers_bootstrap
+  )
 }
 
 resource "hcloud_load_balancer" "lb" {
