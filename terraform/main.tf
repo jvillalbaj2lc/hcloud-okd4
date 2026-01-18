@@ -1,10 +1,19 @@
+module "hcloud_dns" {
+  source            = "./modules/hcloud-dns"
+  dns_domain        = var.dns_domain
+  ignition_ip       = var.bootstrap == true ? module.ignition.ipv4_addresses[0] : ""
+  load_balancer_ip  = hcloud_load_balancer.lb.ipv4
+  master_ips        = module.master.ipv4_addresses
+  bootstrap         = var.bootstrap
+  hetzner_dns_token = var.hetzner_dns_token
+}
+
 module "ignition" {
   source         = "./modules/hcloud_instance"
   instance_count = var.bootstrap == true ? 1 : 0
   location       = var.location
   name           = "ignition"
   dns_domain     = var.dns_domain
-  dns_zone_id    = var.dns_zone_id
   image          = "ubuntu-22.04"
   user_data      = file("templates/cloud-init.tpl")
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
@@ -18,13 +27,11 @@ module "bootstrap" {
   location        = var.location
   name            = "bootstrap"
   dns_domain      = var.dns_domain
-  dns_zone_id     = var.dns_zone_id
-  dns_internal_ip = false
   image           = data.hcloud_image.image.id
   image_name      = var.image
   server_type     = var.server_type_bootstrap
   subnet          = hcloud_network_subnet.subnet.id
-  ignition_url    = var.bootstrap == true ? "http://${cloudflare_dns_record.dns_a_ignition[0].name}/bootstrap.ign" : ""
+  ignition_url    = var.bootstrap == true ? "http://ignition.${var.dns_domain}/bootstrap.ign" : ""
 }
 
 module "master" {
@@ -33,8 +40,6 @@ module "master" {
   location        = var.location
   name            = "master"
   dns_domain      = var.dns_domain
-  dns_zone_id     = var.dns_zone_id
-  dns_internal_ip = false
   image           = data.hcloud_image.image.id
   image_name      = var.image
   server_type     = var.server_type_master
@@ -54,8 +59,6 @@ module "worker" {
   location        = var.location
   name            = "worker"
   dns_domain      = var.dns_domain
-  dns_zone_id     = var.dns_zone_id
-  dns_internal_ip = false
   image           = data.hcloud_image.image.id
   image_name      = var.image
   server_type     = var.server_type_worker

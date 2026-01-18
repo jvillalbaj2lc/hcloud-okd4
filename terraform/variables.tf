@@ -100,3 +100,8 @@ variable "server_type_worker" {
   description = "Hetzner server type for worker nodes"
   default     = "cpx41"
 }
+
+variable "hetzner_dns_token" {
+  type        = string
+  description = "Hetzner DNS API token"
+}
