@@ -25,13 +25,13 @@ ifeq ($(ARCH),arm64)
 	HCLOUD_SERVER_TYPE?=cax31
     FILE_DOWN_ARCH?=arm64-
 else
-	HCLOUD_SERVER_TYPE?=cpx32
+	HCLOUD_SERVER_TYPE?=cx43
 endif
 
 
 
 # Hetzner Cloud location (e.g., nbg1, fsn1, hel1)
-HCLOUD_LOCATION?=nbg1
+HCLOUD_LOCATION?=hel1
 
 # coreos
 ifeq ($(DEPLOYMENT_TYPE),ocp)
