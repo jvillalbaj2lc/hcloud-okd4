@@ -23,9 +23,12 @@ ARCH?=amd64
 # Hetzner Cloud server type defaults per architecture
 ifeq ($(ARCH),arm64)
 	HCLOUD_SERVER_TYPE?=cax31
+    FILE_DOWN_ARCH?=arm64-
 else
 	HCLOUD_SERVER_TYPE?=cpx31
 endif
+
+
 
 # Hetzner Cloud location (e.g., nbg1, fsn1, hel1)
 HCLOUD_LOCATION?=nbg1
@@ -61,8 +64,8 @@ fetch: fetch_$(DEPLOYMENT_TYPE)
 
 .PHONY: fetch_okd
 fetch_okd:
-	wget -O openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz
-	wget -O openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-install-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-install-linux-$(FILE_DOWN_ARCH)$(OPENSHIFT_RELEASE).tar.gz
+	wget -O openshift-client-linux-$(ARCH)-$(OPENSHIFT_RELEASE).tar.gz $(OKD_MIRROR)/$(OPENSHIFT_RELEASE)/openshift-client-linux-$(FILE_DOWN_ARCH)$(OPENSHIFT_RELEASE).tar.gz
 
 .PHONY: fetch_ocp
 fetch_ocp:
