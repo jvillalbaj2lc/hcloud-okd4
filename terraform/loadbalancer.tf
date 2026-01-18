@@ -43,7 +43,12 @@ resource "hcloud_load_balancer_target" "servers" {
   server_id        = each.value
   use_private_ip   = true
 
-  depends_on = [hcloud_load_balancer_network.lb_network]
+  depends_on = [
+    hcloud_load_balancer_network.lb_network,
+    module.bootstrap,
+    module.master,
+    module.worker,
+  ]
 }
 
 resource "hcloud_load_balancer_service" "lb_api" {
