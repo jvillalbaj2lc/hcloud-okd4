@@ -9,6 +9,7 @@ resource "hcloud_server" "server" {
     hostname         = format("%s%02d.%s", var.name, count.index + 1, var.dns_domain)
     hostname_b64     = base64encode(format("%s%02d.%s", var.name, count.index + 1, var.dns_domain))
     resolvconf_b64   = base64encode(templatefile("${path.module}/templates/resolv.conf", { dns_server_ip = var.dns_server_ip }))
+    nm_dns_b64       = base64encode(templatefile("${path.module}/templates/nm-dns.conf", {}))
     ignition_url     = var.ignition_url
     ignition_version = var.ignition_version
     ignition_cacert  = var.ignition_cacert
