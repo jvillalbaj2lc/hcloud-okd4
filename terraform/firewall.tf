@@ -1,6 +1,10 @@
 # https://docs.okd.io/latest/installing/installing_platform_agnostic/installing-platform-agnostic.html#installation-network-connectivity-user-infra_installing-platform-agnostic
+resource "random_id" "firewall_suffix" {
+  byte_length = 2
+}
+
 resource "hcloud_firewall" "base" {
-  name = "${var.dns_domain}-base"
+  name = "${var.dns_domain}-base-${random_id.firewall_suffix.hex}"
   # ICMP is always a good idea
   #
   # Network reachability tests
@@ -79,7 +83,7 @@ resource "hcloud_firewall" "base" {
 
 
 resource "hcloud_firewall" "master" {
-  name = "${var.dns_domain}-master"
+  name = "${var.dns_domain}-master-${random_id.firewall_suffix.hex}"
 
   # ICMP is always a good idea
   #
@@ -116,7 +120,7 @@ resource "hcloud_firewall" "master" {
 }
 
 resource "hcloud_firewall" "ingress" {
-  name = "${var.dns_domain}-ingress"
+  name = "${var.dns_domain}-ingress-${random_id.firewall_suffix.hex}"
 
   # ICMP is always a good idea
   #
