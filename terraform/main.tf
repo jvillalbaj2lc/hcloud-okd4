@@ -3,12 +3,16 @@ module "ignition" {
   instance_count = var.bootstrap == true ? 1 : 0
   location       = var.location
   name           = "ignition"
+  static_ips     = [var.ip_ignition]
   dns_domain     = var.dns_domain
   image          = "ubuntu-22.04"
   user_data      = file("templates/cloud-init.tpl")
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
   server_type    = var.server_type_ignition
   subnet         = hcloud_network_subnet.subnet.id
+  depends_on = [
+    module.dns-server
+  ]
 }
 
 module "dns-server" {
@@ -23,10 +27,10 @@ module "dns-server" {
     apps_ip       = hcloud_load_balancer_network.lb_network.ip
     api_ip        = hcloud_load_balancer_network.lb_network.ip
     api_int_ip    = hcloud_load_balancer_network.lb_network.ip
-    ignition_ips  = flatten(module.ignition.*.private_ipv4_addresses)
-    bootstrap_ips = flatten(module.bootstrap.*.private_ipv4_addresses)
-    master_ips    = flatten(module.master.*.private_ipv4_addresses)
-    worker_ips    = flatten(module.worker.*.private_ipv4_addresses)
+    ignition_ips  = [var.ip_ignition]
+    bootstrap_ips = [var.ip_bootstrap]
+    master_ips    = var.ips_master
+    worker_ips    = var.ips_worker
   })
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
   server_type    = "cx23"
@@ -38,6 +42,7 @@ module "bootstrap" {
   instance_count  = var.bootstrap == true ? 1 : 0
   location        = var.location
   name            = "bootstrap"
+  static_ips      = [var.ip_bootstrap]
   dns_domain      = var.dns_domain
   image           = data.hcloud_image.image.id
   image_name      = var.image
@@ -45,6 +50,9 @@ module "bootstrap" {
   subnet          = hcloud_network_subnet.subnet.id
   ignition_url    = var.bootstrap == true ? "http://ignition.${var.dns_domain}/bootstrap.ign" : ""
   dns_server_ip   = var.ip_dns_server
+  depends_on = [
+    module.dns-server
+  ]
 }
 
 module "master" {
@@ -52,6 +60,7 @@ module "master" {
   instance_count  = var.replicas_master
   location        = var.location
   name            = "master"
+  static_ips      = var.ips_master
   dns_domain      = var.dns_domain
   image           = data.hcloud_image.image.id
   image_name      = var.image
@@ -65,6 +74,9 @@ module "master" {
   ignition_url    = "https://api-int.${var.dns_domain}:22623/config/master"
   ignition_cacert = local.ignition_master_cacert
   dns_server_ip   = var.ip_dns_server
+  depends_on = [
+    module.dns-server
+  ]
 }
 
 module "worker" {
@@ -72,6 +84,7 @@ module "worker" {
   instance_count  = var.replicas_worker
   location        = var.location
   name            = "worker"
+  static_ips      = var.ips_worker
   dns_domain      = var.dns_domain
   image           = data.hcloud_image.image.id
   image_name      = var.image
@@ -85,6 +98,9 @@ module "worker" {
   ignition_url    = "https://api-int.${var.dns_domain}:22623/config/worker"
   ignition_cacert = local.ignition_worker_cacert
   dns_server_ip   = var.ip_dns_server
+  depends_on = [
+    module.dns-server
+  ]
 }
 
 module "hcloud_dns" {

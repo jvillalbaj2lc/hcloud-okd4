@@ -96,6 +96,12 @@ variable "subnet" {
   description = "Id of the additional internal network"
 }
 
+variable "static_ips" {
+  type        = list(string)
+  description = "Static IPs to assign to the instances"
+  default     = []
+}
+
 variable "dns_server_ip" {
   type        = string
   description = "IP of the internal DNS server"
