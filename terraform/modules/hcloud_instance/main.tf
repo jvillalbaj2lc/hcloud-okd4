@@ -11,6 +11,11 @@ resource "hcloud_server" "server" {
   lifecycle {
     ignore_changes = [user_data, image]
   }
+
+  network {
+    network_id = var.subnet
+    ip         = length(var.static_ips) > 0 ? var.static_ips[count.index] : null
+  }
 }
 
 resource "hcloud_rdns" "dns-ptr-ipv4" {
