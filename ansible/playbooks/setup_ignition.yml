@@ -21,6 +21,20 @@
         owner: root
         group: root
         mode: 0644
+    - name: upload master ignition file
+      copy:
+        src: "../../ignition/master.ign"
+        dest: "/var/www/html/master.ign"
+        owner: root
+        group: root
+        mode: 0644
+    - name: upload worker ignition file
+      copy:
+        src: "../../ignition/worker.ign"
+        dest: "/var/www/html/worker.ign"
+        owner: root
+        group: root
+        mode: 0644
     - name: install apache webserver
       package:
         name: apache2
