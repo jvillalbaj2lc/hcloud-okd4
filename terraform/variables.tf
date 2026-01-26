@@ -59,6 +59,12 @@ variable "ip_dns_server" {
   default     = "192.168.254.100"
 }
 
+variable "dns_private_iface" {
+  type        = string
+  description = "Private network interface name for the DNS server"
+  default     = "enp7s0"
+}
+
 variable "ip_bootstrap" {
   type        = string
   description = "IP of the bootstrap server"

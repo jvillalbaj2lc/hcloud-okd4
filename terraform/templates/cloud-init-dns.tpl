@@ -9,7 +9,9 @@ write_files:
       # Main dnsmasq config
       conf-dir=/etc/dnsmasq.d,*.conf
       bind-interfaces
-      listen-address=127.0.0.1
+      interface=${private_iface}
+      listen-address=127.0.0.1,${private_ip}
+      except-interface=eth0
       # (Optional hardening)
       domain-needed
       bogus-priv

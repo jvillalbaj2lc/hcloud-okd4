@@ -23,14 +23,16 @@ module "dns-server" {
   dns_domain     = var.dns_domain
   image          = "ubuntu-22.04"
   user_data = templatefile("templates/cloud-init-dns.tpl", {
-    dns_domain    = var.dns_domain
-    apps_ip       = hcloud_load_balancer_network.lb_network.ip
-    api_ip        = hcloud_load_balancer_network.lb_network.ip
-    api_int_ip    = hcloud_load_balancer_network.lb_network.ip
-    ignition_ips  = [var.ip_ignition]
-    bootstrap_ips = [var.ip_bootstrap]
-    master_ips    = var.ips_master
-    worker_ips    = var.ips_worker
+    dns_domain     = var.dns_domain
+    apps_ip        = hcloud_load_balancer_network.lb_network.ip
+    api_ip         = hcloud_load_balancer_network.lb_network.ip
+    api_int_ip     = hcloud_load_balancer_network.lb_network.ip
+    ignition_ips   = [var.ip_ignition]
+    bootstrap_ips  = [var.ip_bootstrap]
+    master_ips     = var.ips_master
+    worker_ips     = var.ips_worker
+    private_ip     = var.ip_dns_server
+    private_iface  = var.dns_private_iface
   })
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
   server_type    = "cx23"
