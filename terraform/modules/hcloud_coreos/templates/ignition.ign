@@ -34,11 +34,7 @@
           "verification": {}
         },
         "mode": 420
-      }
-    ]
-  },
-  "storage": {
-    "files": [
+      },
       {
         "filesystem": "root",
         "group": {},
