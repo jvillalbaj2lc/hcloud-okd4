@@ -67,7 +67,7 @@ module "hcloud_dns" {
   source              = "./modules/hcloud-dns"
   zone_name           = var.dns_zone_name
   cluster_domain      = var.dns_domain
-  lb_private_ip       = hcloud_load_balancer.lb.network_ip
+  lb_private_ip       = hcloud_load_balancer_network.lb_network.ip
   master_private_ips  = module.master.private_ipv4_addresses
   ignition_private_ip = var.bootstrap == true ? module.ignition.private_ipv4_addresses[0] : null
   bootstrap_enabled   = var.bootstrap
