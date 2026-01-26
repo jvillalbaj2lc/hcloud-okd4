@@ -1,9 +1,9 @@
 output "server_ids" {
-  value = hcloud_server.server.*.id
+  value = hcloud_server.server[*].id
 }
 
 output "server_names" {
-  value = hcloud_server.server.*.name
+  value = hcloud_server.server[*].name
 }
 
 #output "internal_ipv4_addresses" {
@@ -11,13 +11,13 @@ output "server_names" {
 #}
 
 output "ipv4_addresses" {
-  value = hcloud_server.server.*.ipv4_address
+  value = hcloud_server.server[*].ipv4_address
 }
 
 output "ipv6_addresses" {
-  value = hcloud_server.server.*.ipv6_address
+  value = hcloud_server.server[*].ipv6_address
 }
 
 output "private_ipv4_addresses" {
-  value = hcloud_server.server.*.network[0].ip
+  value = hcloud_server.server[*].network[0].ip
 }
