@@ -18,12 +18,12 @@ variable "bootstrap" {
 
 variable "dns_domain" {
   type        = string
-  description = "Name of the Cloudflare domain"
+  description = "Cluster domain (e.g. okd4.example.com)"
 }
 
-variable "dns_zone_id" {
+variable "dns_zone_name" {
   type        = string
-  description = "Zone ID of the Cloudflare domain"
+  description = "Apex DNS zone name (e.g. example.com)"
 }
 
 variable "ip_loadbalancer_api" {

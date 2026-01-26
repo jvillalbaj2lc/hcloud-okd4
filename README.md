@@ -159,8 +159,8 @@ compute:
 
 ```bash
 # Terraform / DNS
+export TF_VAR_dns_zone_name=example.com
 export TF_VAR_dns_domain=okd4.example.com
-export TF_VAR_dns_zone_id=YOUR_ZONE_ID
 
 # Hetzner Cloud credentials
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
@@ -169,9 +169,6 @@ export HCLOUD_LOCATION=nbg1
 # Optional: set the Hetzner server type for Packer builds (e.g., cx43, cpx31, cax31)
 export HCLOUD_SERVER_TYPE=cx43
 
-# Cloudflare credentials
-export CLOUDFLARE_EMAIL=user@example.com
-export CLOUDFLARE_API_KEY=YOUR_API_KEY
 ```
 
 ### ARM + OKD 4.20 Example

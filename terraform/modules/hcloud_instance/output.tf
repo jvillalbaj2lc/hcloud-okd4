@@ -17,3 +17,7 @@ output "ipv4_addresses" {
 output "ipv6_addresses" {
   value = hcloud_server.server.*.ipv6_address
 }
+
+output "private_ipv4_addresses" {
+  value = hcloud_server.server.*.network[0].ip
+}

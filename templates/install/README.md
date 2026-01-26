@@ -10,8 +10,8 @@ cp templates/install/install-config.yaml.template install-config.yaml
 
 Edit `install-config.yaml` and fill in:
 
-- `baseDomain`: must match `TF_VAR_dns_domain` (example: `okd4.example.com`).
-- `metadata.name`: cluster name (e.g. `okd4`).
+- `baseDomain`: must match `TF_VAR_dns_zone_name` (example: `example.com`).
+- `metadata.name`: cluster name (e.g. `okd4`, resulting in `okd4.example.com`).
 - `machineCIDR`: the private network CIDR for your Hetzner Cloud network (example: `10.0.0.0/16`).
 - `pullSecret`: paste your full pull secret JSON for OCP (or use the OKD dummy auth if applicable).
 - `sshKey`: paste your SSH public key.
@@ -37,6 +37,6 @@ Continue with the steps in the root `README.md` (build toolbox, generate manifes
 ## Notes on required Hetzner values
 
 - `HCLOUD_TOKEN`: Hetzner Cloud API token.
-- `TF_VAR_dns_domain`: your base domain for the cluster.
-- `TF_VAR_dns_zone_id`: DNS zone ID in your DNS provider.
+- `TF_VAR_dns_zone_name`: your apex DNS zone (example: `example.com`).
+- `TF_VAR_dns_domain`: your cluster domain (example: `okd4.example.com`).
 - `machineCIDR`: should be the CIDR of the private network used by your Hetzner instances.

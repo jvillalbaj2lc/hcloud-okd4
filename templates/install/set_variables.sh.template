@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
 
 # Terraform / DNS
+export TF_VAR_dns_zone_name=example.com
 export TF_VAR_dns_domain=okd4.example.com
-export TF_VAR_dns_zone_id=YOUR_ZONE_ID
 
 # Hetzner Cloud credentials
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
 export HCLOUD_LOCATION=hel1
 export HCLOUD_SERVER_TYPE=cx43
-
-# Cloudflare credentials
-export CLOUDFLARE_EMAIL=user@example.com
-export CLOUDFLARE_API_KEY=YOUR_API_KEY
 
 # OKD/OCP settings
 export DEPLOYMENT_TYPE=okd

@@ -1,6 +1,3 @@
-provider "cloudflare" {
-}
-
 provider "hcloud" {
 }
 

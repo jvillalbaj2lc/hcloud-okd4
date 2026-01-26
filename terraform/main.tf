@@ -21,7 +21,7 @@ module "bootstrap" {
   image_name      = var.image
   server_type     = var.server_type_bootstrap
   subnet          = hcloud_network_subnet.subnet.id
-  ignition_url    = var.bootstrap == true ? "http://${cloudflare_dns_record.dns_a_ignition[0].name}/bootstrap.ign" : ""
+  ignition_url    = var.bootstrap == true ? "http://ignition.${var.dns_domain}/bootstrap.ign" : ""
 }
 
 module "master" {
@@ -60,4 +60,14 @@ module "worker" {
   subnet          = hcloud_network_subnet.subnet.id
   ignition_url    = "https://api-int.${var.dns_domain}:22623/config/worker"
   ignition_cacert = local.ignition_worker_cacert
+}
+
+module "hcloud_dns" {
+  source              = "./modules/hcloud-dns"
+  zone_name           = var.dns_zone_name
+  cluster_domain      = var.dns_domain
+  lb_private_ip       = hcloud_load_balancer.lb.network_ip
+  master_private_ips  = module.master.private_ipv4_addresses
+  ignition_private_ip = var.bootstrap == true ? module.ignition.private_ipv4_addresses[0] : null
+  bootstrap_enabled   = var.bootstrap
 }
