@@ -9,7 +9,7 @@ module "ignition" {
   user_data      = file("templates/cloud-init.tpl")
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
   server_type    = var.server_type_ignition
-  subnet         = hcloud_network_subnet.subnet.id
+  network_id     = hcloud_network.network.id
   depends_on = [
     module.dns-server
   ]
@@ -34,7 +34,7 @@ module "dns-server" {
   })
   ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
   server_type    = "cx23"
-  subnet         = hcloud_network_subnet.subnet.id
+  network_id     = hcloud_network.network.id
 }
 
 module "bootstrap" {

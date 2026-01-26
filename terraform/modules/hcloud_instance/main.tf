@@ -13,7 +13,7 @@ resource "hcloud_server" "server" {
   }
 
   network {
-    network_id = var.subnet
+    network_id = var.network_id
     ip         = length(var.static_ips) > 0 ? var.static_ips[count.index] : null
   }
 }

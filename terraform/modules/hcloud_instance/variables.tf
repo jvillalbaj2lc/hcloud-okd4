@@ -67,9 +67,9 @@ variable "volume_size" {
   default     = 20
 }
 
-variable "subnet" {
-  type        = string
-  description = "Id of the additional internal network"
+variable "network_id" {
+  type        = number
+  description = "ID of the internal network"
 }
 
 variable "static_ips" {
