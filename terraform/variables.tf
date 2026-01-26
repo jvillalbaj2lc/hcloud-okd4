@@ -56,7 +56,7 @@ variable "ip_loadbalancer_apps" {
 variable "ip_dns_server" {
   type        = string
   description = "IP of the internal DNS server"
-  default     = "192.168.254.4"
+  default     = "192.168.254.100"
 }
 
 variable "network_cidr" {
