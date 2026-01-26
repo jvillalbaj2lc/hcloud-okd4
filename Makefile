@@ -123,7 +123,9 @@ wait_completion:
 .PHONY: infrastructure
 infrastructure:
 	@if [ -z "$(TF_VAR_dns_domain)" ]; then echo "ERROR: TF_VAR_dns_domain is not set"; exit 1; fi
-	@if [ -z "$(TF_VAR_dns_zone_name)" ]; then echo "ERROR: TF_VAR_dns_zone_name is not set"; exit 1; fi
+	@if [ -z "$(TF_VAR_manage_dns)" ] || [ "$(TF_VAR_manage_dns)" = "true" ]; then \
+		if [ -z "$(TF_VAR_dns_zone_name)" ]; then echo "ERROR: TF_VAR_dns_zone_name is not set"; exit 1; fi; \
+	fi
 	@if [ -z "$(HCLOUD_TOKEN)" ]; then echo "ERROR: HCLOUD_TOKEN is not set"; exit 1; fi
 	(cd terraform && terraform init && terraform $(MODE) -var image=$(COREOS_IMAGE) -var arch=$(ARCH) -var bootstrap=$(BOOTSTRAP))
 	if [ "$(MODE)" == "apply" ]; then (cd ansible && ansible-playbook site.yml); fi

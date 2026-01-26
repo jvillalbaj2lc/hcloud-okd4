@@ -21,9 +21,21 @@ variable "dns_domain" {
   description = "Cluster domain (e.g. okd4.example.com)"
 }
 
+variable "manage_dns" {
+  type        = bool
+  description = "Whether to manage DNS records via Hetzner DNS"
+  default     = true
+}
+
 variable "dns_zone_name" {
   type        = string
   description = "Apex DNS zone name (e.g. example.com)"
+  default     = null
+
+  validation {
+    condition     = var.manage_dns == false || (var.dns_zone_name != null && var.dns_zone_name != "")
+    error_message = "dns_zone_name must be set when manage_dns is true."
+  }
 }
 
 variable "ip_loadbalancer_api" {

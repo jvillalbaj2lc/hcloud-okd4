@@ -161,6 +161,7 @@ compute:
 # Terraform / DNS
 export TF_VAR_dns_zone_name=example.com
 export TF_VAR_dns_domain=okd4.example.com
+export TF_VAR_manage_dns=true
 
 # Hetzner Cloud credentials
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN
@@ -184,6 +185,23 @@ export TF_VAR_server_type_master=cax31
 export TF_VAR_server_type_worker=cax31
 export TF_VAR_server_type_ignition=cax31
 ```
+
+---
+
+## Using Internal DNS (no Hetzner-managed DNS records)
+
+If you manage DNS internally (for example, with a private DNS service) and do not want Terraform to create Hetzner DNS zones/records, disable DNS management and make sure your internal DNS resolves the cluster records to the **private** load balancer and node IPs:
+
+```bash
+export TF_VAR_manage_dns=false
+```
+
+When `TF_VAR_manage_dns=false`, you do **not** need `TF_VAR_dns_zone_name`, but you still must set `TF_VAR_dns_domain` and ensure the following records resolve inside your network:
+
+- `api.<cluster_domain>` and `api-int.<cluster_domain>` → load balancer private IP
+- `apps.<cluster_domain>` and `*.apps.<cluster_domain>` → load balancer private IP
+- `etcd-0.<cluster_domain>`, `etcd-1.<cluster_domain>`, … → each control plane private IP
+- `ignition.<cluster_domain>` → ignition host private IP (only when `BOOTSTRAP=true`)
 
 ---
 
