@@ -5,63 +5,64 @@ locals {
 
 resource "hcloud_zone" "apex" {
   name = var.zone_name
+  mode = "primary"
 }
 
 resource "hcloud_zone_rrset" "api" {
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "api.${local.cluster_label}"
   type    = "A"
   ttl     = var.ttl
-  value   = [var.lb_private_ip]
+  records = [{ value = var.lb_private_ip }]
 }
 
 resource "hcloud_zone_rrset" "api_int" {
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "api-int.${local.cluster_label}"
   type    = "A"
   ttl     = var.ttl
-  value   = [var.lb_private_ip]
+  records = [{ value = var.lb_private_ip }]
 }
 
 resource "hcloud_zone_rrset" "apps" {
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "apps.${local.cluster_label}"
   type    = "A"
   ttl     = var.ttl
-  value   = [var.lb_private_ip]
+  records = [{ value = var.lb_private_ip }]
 }
 
 resource "hcloud_zone_rrset" "apps_wildcard" {
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "*.apps.${local.cluster_label}"
   type    = "A"
   ttl     = var.ttl
-  value   = [var.lb_private_ip]
+  records = [{ value = var.lb_private_ip }]
 }
 
 resource "hcloud_zone_rrset" "ignition" {
   count   = var.bootstrap_enabled ? 1 : 0
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "ignition.${local.cluster_label}"
   type    = "A"
   ttl     = var.ttl
-  value   = [var.ignition_private_ip]
+  records = [{ value = var.ignition_private_ip }]
 }
 
 resource "hcloud_zone_rrset" "etcd" {
   for_each = { for idx, ip in var.master_private_ips : idx => ip }
 
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "etcd-${each.key}.${local.cluster_label}"
   type    = "A"
   ttl     = var.ttl
-  value   = [each.value]
+  records = [{ value = each.value }]
 }
 
 resource "hcloud_zone_rrset" "etcd_srv" {
-  zone_id = hcloud_zone.apex.id
+  zone    = hcloud_zone.apex.name
   name    = "_etcd-server-ssl._tcp.${local.cluster_label}"
   type    = "SRV"
   ttl     = var.ttl
-  value   = local.etcd_targets
+  records = [for target in local.etcd_targets : { value = target }]
 }
