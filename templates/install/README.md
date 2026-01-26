@@ -10,7 +10,7 @@ cp templates/install/install-config.yaml.template install-config.yaml
 
 Edit `install-config.yaml` and fill in:
 
-- `baseDomain`: must match `TF_VAR_dns_zone_name` (example: `example.com`).
+- `baseDomain`: must match `TF_VAR_dns_zone_name` when `TF_VAR_manage_dns=true` (example: `example.com`). For internal DNS, use your internal base domain.
 - `metadata.name`: cluster name (e.g. `okd4`, resulting in `okd4.example.com`).
 - `machineCIDR`: the private network CIDR for your Hetzner Cloud network (example: `10.0.0.0/16`).
 - `pullSecret`: paste your full pull secret JSON for OCP (or use the OKD dummy auth if applicable).
@@ -22,7 +22,7 @@ Edit `install-config.yaml` and fill in:
 cp templates/install/set_variables.sh.template set_variables.sh
 ```
 
-Edit `set_variables.sh` and replace the placeholder values with your actual credentials and desired cluster settings.
+Edit `set_variables.sh` and replace the placeholder values with your actual credentials and desired cluster settings. Set `TF_VAR_manage_dns=false` if you will provide DNS records internally.
 
 ## 3) Source your variables
 
@@ -37,6 +37,7 @@ Continue with the steps in the root `README.md` (build toolbox, generate manifes
 ## Notes on required Hetzner values
 
 - `HCLOUD_TOKEN`: Hetzner Cloud API token.
-- `TF_VAR_dns_zone_name`: your apex DNS zone (example: `example.com`).
+- `TF_VAR_manage_dns`: set to `false` to disable Hetzner DNS records when using internal DNS.
+- `TF_VAR_dns_zone_name`: your apex DNS zone (example: `example.com`, required when `TF_VAR_manage_dns=true`).
 - `TF_VAR_dns_domain`: your cluster domain (example: `okd4.example.com`).
 - `machineCIDR`: should be the CIDR of the private network used by your Hetzner instances.

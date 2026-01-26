@@ -3,6 +3,7 @@
 # Terraform / DNS
 export TF_VAR_dns_zone_name=example.com
 export TF_VAR_dns_domain=okd4.example.com
+export TF_VAR_manage_dns=true
 
 # Hetzner Cloud credentials
 export HCLOUD_TOKEN=YOUR_HCLOUD_TOKEN

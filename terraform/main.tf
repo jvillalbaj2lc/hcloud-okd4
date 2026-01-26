@@ -63,6 +63,7 @@ module "worker" {
 }
 
 module "hcloud_dns" {
+  count               = var.manage_dns ? 1 : 0
   source              = "./modules/hcloud-dns"
   zone_name           = var.dns_zone_name
   cluster_domain      = var.dns_domain
