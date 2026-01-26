@@ -96,6 +96,12 @@ variable "subnet" {
   description = "Id of the additional internal network"
 }
 
+variable "dns_server_ip" {
+  type        = string
+  description = "IP of the internal DNS server"
+  default     = null
+}
+
 variable "image_name" {
   type        = string
   description = "Either fcos or rhcos (necessary for ignition rendering)"
