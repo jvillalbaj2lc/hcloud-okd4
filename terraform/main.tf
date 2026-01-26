@@ -11,6 +11,28 @@ module "ignition" {
   subnet         = hcloud_network_subnet.subnet.id
 }
 
+module "dns-server" {
+  source         = "./modules/hcloud_instance"
+  instance_count = 1
+  name           = "dns-server"
+  static_ips     = [var.ip_dns_server]
+  dns_domain     = var.dns_domain
+  image          = "ubuntu-22.04"
+  user_data = templatefile("templates/cloud-init-dns.tpl", {
+    dns_domain    = var.dns_domain
+    apps_ip       = hcloud_load_balancer_network.lb_network.ip
+    api_ip        = hcloud_load_balancer_network.lb_network.ip
+    api_int_ip    = hcloud_load_balancer_network.lb_network.ip
+    ignition_ips  = flatten(module.ignition.*.private_ipv4_addresses)
+    bootstrap_ips = flatten(module.bootstrap.*.private_ipv4_addresses)
+    master_ips    = flatten(module.master.*.private_ipv4_addresses)
+    worker_ips    = flatten(module.worker.*.private_ipv4_addresses)
+  })
+  ssh_keys       = data.hcloud_ssh_keys.all_keys.ssh_keys.*.name
+  server_type    = "cx23"
+  subnet         = hcloud_network_subnet.subnet.id
+}
+
 module "bootstrap" {
   source          = "./modules/hcloud_coreos"
   instance_count  = var.bootstrap == true ? 1 : 0
@@ -22,6 +44,7 @@ module "bootstrap" {
   server_type     = var.server_type_bootstrap
   subnet          = hcloud_network_subnet.subnet.id
   ignition_url    = var.bootstrap == true ? "http://ignition.${var.dns_domain}/bootstrap.ign" : ""
+  dns_server_ip   = var.ip_dns_server
 }
 
 module "master" {
@@ -41,6 +64,7 @@ module "master" {
   subnet          = hcloud_network_subnet.subnet.id
   ignition_url    = "https://api-int.${var.dns_domain}:22623/config/master"
   ignition_cacert = local.ignition_master_cacert
+  dns_server_ip   = var.ip_dns_server
 }
 
 module "worker" {
@@ -60,6 +84,7 @@ module "worker" {
   subnet          = hcloud_network_subnet.subnet.id
   ignition_url    = "https://api-int.${var.dns_domain}:22623/config/worker"
   ignition_cacert = local.ignition_worker_cacert
+  dns_server_ip   = var.ip_dns_server
 }
 
 module "hcloud_dns" {

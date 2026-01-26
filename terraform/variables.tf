@@ -24,7 +24,7 @@ variable "dns_domain" {
 variable "manage_dns" {
   type        = bool
   description = "Whether to manage DNS records via Hetzner DNS"
-  default     = true
+  default     = false
 }
 
 variable "dns_zone_name" {
@@ -51,6 +51,12 @@ variable "ip_loadbalancer_api_int" {
 variable "ip_loadbalancer_apps" {
   description = "IP of an external loadbalancer for apps (optional)"
   default     = null
+}
+
+variable "ip_dns_server" {
+  type        = string
+  description = "IP of the internal DNS server"
+  default     = "192.168.254.4"
 }
 
 variable "network_cidr" {

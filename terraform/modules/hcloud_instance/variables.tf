@@ -71,3 +71,9 @@ variable "subnet" {
   type        = string
   description = "Id of the additional internal network"
 }
+
+variable "static_ips" {
+  type        = list(string)
+  description = "List of static private IPs to assign to the instances"
+  default     = []
+}
