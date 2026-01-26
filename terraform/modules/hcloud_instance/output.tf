@@ -19,5 +19,5 @@ output "ipv6_addresses" {
 }
 
 output "private_ipv4_addresses" {
-  value = [for s in hcloud_server.server : s.network[0].ip if length(s.network) > 0]
+  value = hcloud_server_network.server_network.*.ip
 }
