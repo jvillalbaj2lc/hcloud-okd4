@@ -59,6 +59,30 @@ variable "ip_dns_server" {
   default     = "192.168.254.100"
 }
 
+variable "ip_bootstrap" {
+  type        = string
+  description = "IP of the bootstrap server"
+  default     = "192.168.254.101"
+}
+
+variable "ip_ignition" {
+  type        = string
+  description = "IP of the ignition server"
+  default     = "192.168.254.102"
+}
+
+variable "ips_master" {
+  type        = list(string)
+  description = "IPs of the master servers"
+  default     = ["192.168.254.1", "192.168.254.2", "192.168.254.3"]
+}
+
+variable "ips_worker" {
+  type        = list(string)
+  description = "IPs of the worker servers"
+  default     = ["192.168.254.4", "192.168.254.5"]
+}
+
 variable "network_cidr" {
   type        = string
   description = "CIDR for the network"
