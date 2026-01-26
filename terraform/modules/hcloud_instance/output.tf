@@ -19,5 +19,5 @@ output "ipv6_addresses" {
 }
 
 output "private_ipv4_addresses" {
-  value = [for s in hcloud_server.server : s.network[0].ip]
+  value = [for s in hcloud_server.server : tolist(s.network)[0].ip]
 }
