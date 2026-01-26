@@ -44,8 +44,8 @@ locals {
   ignition_bootstrap_url = var.bootstrap == true ? (
     var.manage_dns ? "http://ignition.${var.dns_domain}/bootstrap.ign" : "http://${local.ignition_private_ip}/bootstrap.ign"
   ) : ""
-  ignition_master_url = var.manage_dns ? "https://api-int.${var.dns_domain}:22623/config/master" : "https://${hcloud_load_balancer_network.lb_network.ip}:22623/config/master"
-  ignition_worker_url = var.manage_dns ? "https://api-int.${var.dns_domain}:22623/config/worker" : "https://${hcloud_load_balancer_network.lb_network.ip}:22623/config/worker"
+  ignition_master_url = "https://api-int.${var.dns_domain}:22623/config/master"
+  ignition_worker_url = "https://api-int.${var.dns_domain}:22623/config/worker"
 }
 
 module "bootstrap" {
