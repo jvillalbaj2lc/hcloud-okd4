@@ -1,9 +1,9 @@
 output "server_ids" {
-  value = hcloud_server.server[*].id
+  value = [for s in hcloud_server.server : s.id]
 }
 
 output "server_names" {
-  value = hcloud_server.server[*].name
+  value = [for s in hcloud_server.server : s.name]
 }
 
 #output "internal_ipv4_addresses" {
@@ -11,13 +11,13 @@ output "server_names" {
 #}
 
 output "ipv4_addresses" {
-  value = hcloud_server.server[*].ipv4_address
+  value = [for s in hcloud_server.server : s.ipv4_address]
 }
 
 output "ipv6_addresses" {
-  value = hcloud_server.server[*].ipv6_address
+  value = [for s in hcloud_server.server : s.ipv6_address]
 }
 
 output "private_ipv4_addresses" {
-  value = hcloud_server.server[*].network[0].ip
+  value = [for s in hcloud_server.server : s.network[0].ip if length(s.network) > 0]
 }
